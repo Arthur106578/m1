@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="900" viewBox="0 0 1080 900">
+  <style>
+    .box { stroke-width: 1.6; rx: 8; }
+    .name { font-family: Consolas, "Courier New", monospace; font-size: 14px; font-weight: 600; fill: #202124; }
+    .type { font-family: "Microsoft YaHei", sans-serif; font-size: 11px; fill: #5f6368; }
+    .line { stroke: #9aa0a6; stroke-width: 1.5; fill: none; }
+    .stateless { fill: #e8f0fe; stroke: #1a73e8; }
+    .stateful { fill: #fff3e0; stroke: #f57c00; }
+    .state { fill: #e6f4ea; stroke: #137333; }
+    .legend { font-family: "Microsoft YaHei", sans-serif; font-size: 12px; fill: #3c4043; }
+  </style>
+
+  <text x="24" y="34" class="name" style="font-size:16px">counter_deep 默认计数器 · Widget 树</text>
+
+  <!-- 连接线 -->
+  <path class="line" d="M550 70 V88"/>
+  <path class="line" d="M550 153 V173"/>
+  <path class="line" d="M550 238 V258"/>
+  <path class="line" d="M550 323 V343"/>
+  <path class="line" d="M550 408 V428"/>
+  <path class="line" d="M550 493 V515 H140 V535"/>
+  <path class="line" d="M550 515 H940 V535"/>
+  <path class="line" d="M140 591 V612 H160 V635"/>
+  <path class="line" d="M940 591 V635"/>
+  <path class="line" d="M550 683 V710 H380 V735"/>
+  <path class="line" d="M550 710 H735 V735"/>
+
+  <!-- 根 -->
+  <rect class="box" x="440" y="30" width="220" height="40" fill="#f1f3f4" stroke="#80868b"/>
+  <text class="name" x="550" y="55" text-anchor="middle">runApp(const MyApp())</text>
+
+  <!-- MyApp -->
+  <rect class="box stateless" x="450" y="88" width="200" height="48"/>
+  <text class="name" x="550" y="110" text-anchor="middle">MyApp</text>
+  <text class="type" x="550" y="126" text-anchor="middle">StatelessWidget</text>
+
+  <!-- MaterialApp -->
+  <rect class="box stateful" x="450" y="173" width="200" height="48"/>
+  <text class="name" x="550" y="195" text-anchor="middle">MaterialApp</text>
+  <text class="type" x="550" y="211" text-anchor="middle">StatefulWidget</text>
+
+  <!-- MyHomePage -->
+  <rect class="box stateful" x="450" y="258" width="200" height="48"/>
+  <text class="name" x="550" y="280" text-anchor="middle">MyHomePage</text>
+  <text class="type" x="550" y="296" text-anchor="middle">StatefulWidget</text>
+
+  <!-- State -->
+  <rect class="box state" x="440" y="343" width="220" height="48"/>
+  <text class="name" x="550" y="365" text-anchor="middle">_MyHomePageState</text>
+  <text class="type" x="550" y="381" text-anchor="middle">State · int _counter</text>
+
+  <!-- Scaffold -->
+  <rect class="box stateful" x="450" y="428" width="200" height="48"/>
+  <text class="name" x="550" y="450" text-anchor="middle">Scaffold</text>
+  <text class="type" x="550" y="466" text-anchor="middle">StatefulWidget</text>
+
+  <!-- AppBar -->
+  <rect class="box stateful" x="45" y="535" width="190" height="56"/>
+  <text class="name" x="140" y="558" text-anchor="middle">AppBar</text>
+  <text class="type" x="140" y="576" text-anchor="middle">StatefulWidget</text>
+
+  <!-- Center -->
+  <rect class="box stateless" x="450" y="535" width="200" height="56"/>
+  <text class="name" x="550" y="558" text-anchor="middle">Center</text>
+  <text class="type" x="550" y="576" text-anchor="middle">StatelessWidget</text>
+
+  <!-- FAB -->
+  <rect class="box stateless" x="845" y="535" width="200" height="56"/>
+  <text class="name" x="945" y="558" text-anchor="middle">FloatingActionButton</text>
+  <text class="type" x="945" y="576" text-anchor="middle">StatelessWidget</text>
+
+  <!-- AppBar 标题 -->
+  <rect class="box stateless" x="20" y="635" width="240" height="48"/>
+  <text class="name" x="140" y="657" text-anchor="middle">Text(widget.title)</text>
+  <text class="type" x="140" y="673" text-anchor="middle">StatelessWidget</text>
+
+  <!-- Column -->
+  <rect class="box stateless" x="450" y="635" width="200" height="48"/>
+  <text class="name" x="550" y="657" text-anchor="middle">Column</text>
+  <text class="type" x="550" y="673" text-anchor="middle">StatelessWidget</text>
+
+  <!-- Icon -->
+  <rect class="box stateless" x="845" y="635" width="200" height="48"/>
+  <text class="name" x="945" y="657" text-anchor="middle">Icon(Icons.add)</text>
+  <text class="type" x="945" y="673" text-anchor="middle">StatelessWidget</text>
+
+  <!-- Column 子节点 -->
+  <rect class="box stateless" x="230" y="735" width="300" height="56"/>
+  <text class="name" x="380" y="758" text-anchor="middle" style="font-size:12px">Text('You have pushed the button…')</text>
+  <text class="type" x="380" y="776" text-anchor="middle">StatelessWidget</text>
+
+  <rect class="box stateless" x="640" y="735" width="190" height="56"/>
+  <text class="name" x="735" y="758" text-anchor="middle">Text('$_counter')</text>
+  <text class="type" x="735" y="776" text-anchor="middle">StatelessWidget</text>
+
+  <!-- 状态流向标注 -->
+  <path class="line" style="stroke:#c5221f;stroke-dasharray:5 4" d="M1045 563 H1070 V367 H660"/>
+  <text class="type" x="1074" y="470" fill="#c5221f" transform="rotate(90 1074 470)">onPressed → setState → build()</text>
+
+  <!-- 图例 -->
+  <rect class="box stateless" x="40" y="840" width="24" height="16" rx="3"/>
+  <text class="legend" x="72" y="853">StatelessWidget</text>
+  <rect class="box stateful" x="210" y="840" width="24" height="16" rx="3"/>
+  <text class="legend" x="242" y="853">StatefulWidget</text>
+  <rect class="box state" x="380" y="840" width="24" height="16" rx="3"/>
+  <text class="legend" x="412" y="853">State 对象（持有可变状态）</text>
+  <text class="legend" x="640" y="853" fill="#c5221f">红线：状态变更触发的重建路径</text>
+</svg>
