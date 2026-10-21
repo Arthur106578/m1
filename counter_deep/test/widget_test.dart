@@ -11,20 +11,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:counter_deep/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('默认步长为 2，点击一次计数 +2', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('当前步长：+2'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
-    // Verify that our counter has incremented.
     expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+  });
+
+  testWidgets('切换步长为 5 后，点击一次计数 +5', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.text('步长 2'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('步长 5'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('当前步长：+5'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+
+    expect(find.text('5'), findsOneWidget);
   });
 }
