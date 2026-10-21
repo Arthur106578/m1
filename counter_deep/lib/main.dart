@@ -71,6 +71,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void reassemble() {
+    // 热重载（r）时框架会对现有 Element 树调用 reassemble，State 不重建。
+    super.reassemble();
+    debugPrint('[lifecycle] reassemble：热重载 r 触发，State 保留，_counter=$_counter');
+  }
+
+  @override
   void dispose() {
     debugPrint('[lifecycle] dispose：State 永久销毁，之后禁止 setState');
     super.dispose();
@@ -143,12 +150,24 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              '当前步长：+$_step',
-              style: Theme.of(context).textTheme.bodySmall,
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                '当前步长：+$_step',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+              ),
             ),
           ],
         ),

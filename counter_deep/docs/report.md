@@ -39,7 +39,55 @@
 | `build` | 每次需要重建时 | 每次 `setState` 后都打印，`_counter` 与 `_step` 一并输出 |
 | `didUpdateWidget` | 父级用新配置重建本 Widget | 本次 `MyHomePage` 是 `const`，正常操作不会触发；日志保留用于观察 |
 | `deactivate` | 从树中暂时移除 | 页面被替换/热重载时出现 |
+| `reassemble` | 热重载 r 时对现有 Element 树调用 | 不重建 State，`_counter` 保留 |
 | `dispose` | State 永久销毁 | 退出页面时出现，此后不能再调用 `setState` |
+
+### r / R 行为对照记录
+
+真实启动日志（`flutter run -d windows`）：
+
+```
+[lifecycle] initState：State 首次插入树，_counter=0
+[lifecycle] didChangeDependencies：Theme/MediaQuery 等依赖变化
+[lifecycle] build：重建，_counter=0，_step=2
+```
+
+命令行无法注入按键，因此 r / R 用 widget test 在 `reassembleApplication()` 与卸载/重新挂载上复现，日志如下：
+
+```
+# 点击 FAB 一次（+2）
+[lifecycle] build：重建，_counter=2，_step=2
+
+# r —— 热重载
+[lifecycle] reassemble：热重载 r 触发，State 保留，_counter=2
+[lifecycle] build：重建，_counter=2，_step=2
+
+# R —— 热重启
+[lifecycle] deactivate：State 暂时从树中移除
+[lifecycle] dispose：State 永久销毁，之后禁止 setState
+[lifecycle] initState：State 首次插入树，_counter=0
+[lifecycle] didChangeDependencies：Theme/MediaQuery 等依赖变化
+[lifecycle] build：重建，_counter=0，_step=2
+```
+
+| 操作 | 触发路径 | `initState` | `reassemble` | `build` | `dispose` | 计数 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 首次启动 | 挂载 | 执行 1 次 | 否 | 执行 | 否 | 0 |
+| r 热重载 | Element 树 reassemble | **不执行** | 执行 | 执行 | 否 | **保留** |
+| R 热重启 | 重跑 main，整树重建 | **执行 1 次** | 否 | 执行 | 执行 | **归零** |
+
+结论：r 只替换代码并重建 Widget，State 与字段活在内存里；R 等于重启进程，State 全部丢弃。所以改 `_counter` 初值要用 R 才能看到效果。
+
+### Theme.of 取用（种子色方案）
+
+`ColorScheme.fromSeed(seedColor: Colors.teal)` 生成整套色板，页面里所有颜色都从 `Theme.of(context).colorScheme` 取，不写死颜色：
+
+| 位置 | 取用方式 | 效果 |
+| --- | --- | --- |
+| 计数数字 | `colorScheme.primary` | 数字跟随种子色（teal 主色） |
+| 步长胶囊背景 | `colorScheme.primaryContainer` | 浅色容器色，仍是同一色板派生 |
+| 步长胶囊文字 | `colorScheme.onPrimaryContainer` | 与容器色配套的前景色，保证对比度 |
+| 数字/胶囊字体 | `textTheme.displayMedium` / `labelMedium` | Typography 同样来自 Theme |
 
 ### 资源图片
 
@@ -55,3 +103,12 @@
 3. 框架在下一帧调度 `build()`，重建 `Scaffold` 子树
 4. Element 树做 diff，只有显示 `$_counter` 的 `Text` 真正更新，其余 Widget 复用
 5. 整个过程不重建 `MyApp`，因为它是 `const` 的 `StatelessWidget`，配置没有变化
+
+## 6.2 四项要求对照
+
+| # | 要求 | 证据 |
+| --- | --- | --- |
+| 1 | Widget 树绘图：完整层级 + 两类 Widget 标注 | `docs/widget_tree.svg`（配色区分 Stateless / Stateful / State）与 `docs/widget_tree.md`（含 Mermaid 与易混点表） |
+| 2 | 生命周期日志：钩子顺序 + r/R 行为对照 | 代码中 7 个钩子各一行 `debugPrint`；上表为真实启动日志与 r/R 复现日志；`test/widget_test.dart` 第三个用例可重复执行 |
+| 3 | 主题定制：种子色方案 + 至少两处 `Theme.of` | `ColorScheme.fromSeed(seedColor: Colors.teal)`；数字取 `colorScheme.primary`，胶囊取 `primaryContainer` / `onPrimaryContainer`，字体取 `textTheme` |
+| 4 | 资源替换：新增图片资源并显示成功 | `assets/images/appbar_bg.jpg` 已在 `pubspec.yaml` 声明，作为 `AppBar.flexibleSpace` 显示；`flutter build web` 打包出该资源，浏览器实测可见 |
