@@ -44,6 +44,38 @@ class _MyHomePageState extends State<MyHomePage> {
   /// 每次点击 FAB 的增量，可选 1 / 2 / 5，默认 2。
   int _step = 2;
 
+  @override
+  void initState() {
+    super.initState();
+    debugPrint('[lifecycle] initState：State 首次插入树，_counter=$_counter');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint('[lifecycle] didChangeDependencies：Theme/MediaQuery 等依赖变化');
+  }
+
+  @override
+  void didUpdateWidget(covariant MyHomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    debugPrint(
+      '[lifecycle] didUpdateWidget：title "${oldWidget.title}" → "${widget.title}"',
+    );
+  }
+
+  @override
+  void deactivate() {
+    debugPrint('[lifecycle] deactivate：State 暂时从树中移除');
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    debugPrint('[lifecycle] dispose：State 永久销毁，之后禁止 setState');
+    super.dispose();
+  }
+
   void _incrementCounter() {
     setState(() {
       // 把当前步长加进去；setState 会标记本 State 为 dirty，下一帧重跑 build。
@@ -59,9 +91,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('[lifecycle] build：重建，_counter=$_counter，_step=$_step');
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 自定义图片作为 AppBar 背景。
+            Image.asset('assets/images/appbar_bg.jpg', fit: BoxFit.cover),
+            // 从透明到半黑的渐变，保证白色标题在浅色图片上依然清晰。
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black54],
+                ),
+              ),
+            ),
+          ],
+        ),
         title: Text(widget.title),
         actions: [
           PopupMenuButton<int>(
